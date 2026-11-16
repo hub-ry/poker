@@ -27,20 +27,8 @@ struct Player {
 
 };
 
-int main() {
+void play_game(player_count) {
   
-  int player_count;
- 
-  /* Start Menu */
-  while (true) {
-    std::cout << "How many players are playing?\n";
-    std::cin >> player_count;
-
-    if (player_count <= MAX_PLAYERS || player_count >= 2) {
-      break;
-    }
-  }
-
   std::cout << "Dealing ...\n";
   
 
@@ -61,14 +49,54 @@ int main() {
   std::shuffle(deck.begin(), deck.end(), rng);
   
 
-  std::vector<Player> players;
+  std::vector<Player> players(player_count);
   std::vector<std::vector<Card>> hands(player_count);
-  for (int player = 0; i < player_count; ++player) {
-    
-     
-     
+  
+  /* give two cards to each player, just choose from the back of the deck */
+  for (int i = 0; i < 2; ++i) {
+    for (int player = 0; player < player_count; ++player) {
+        players[player].hand.push_back(deck.back());
+        deck.pop_back(); 
+    }
+  }    
 
+  
+  int small_blind = 0;
+  int big_blind = 1;
+
+  while (true) {
+    
+    players[small_blind].chips -= 1;
+    players[small_blind].currentBet = 1;
+
+    players[big_blind].chips -= 2;
+    players[big_blind].currentBet = 2;
+
+    int pot = 3;
+
+    for (int i
+
+    small_blind = (small_blind + 1) % player_count;
+    big_blind = (big_blind + 1) % player_count;
+  } 
+}
+
+int main() {
+  
+  int player_count;
+ 
+  /* Start Menu */
+  while (true) {
+    std::cout << "How many players are playing?\n";
+    std::cin >> player_count;
+
+    if (player_count <= MAX_PLAYERS && player_count >= 2) {
+      break;
+    }
   }
+  
+
+  play_game(player_count);
 
   return 0;
 }

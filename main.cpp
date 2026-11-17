@@ -4,6 +4,8 @@
 #include <random>
 
 constexpr int MAX_PLAYERS = 10;
+constexpr int small_b_val = 10, big_b_val = 20;
+constexpr int starting_chips = 1000;
 
 enum class Suit {
   Clubs, Diamonds, Hearts, Spades
@@ -21,35 +23,37 @@ struct Card {
 
 struct Player {
   std::vector<Card> hand;
-  int chips = 1000;
+  int chips = starting_chips;
   int currentBet = 0;
   bool folded = false;
 
 };
 
-void play_game(player_count) {
-  
-  std::cout << "Dealing ...\n";
-  
+std::vector<Card> init_deck() {
 
-  /* Create the deck */
-  
   std::vector<Card> deck;
+  std::cout << "Dealing ...\n";
 
   for (int suit = 0; suit < 4; ++suit) {
     for (int rank = 2; rank <= 14; ++rank) {
       deck.push_back(Card{static_cast<Rank>(rank),static_cast<Suit>(suit)});
     }
   }
-  
+  return deck;
+}
+
+std::vector<std::vector<Card>> shuffle_and_assign(int player_count,
+                                                  std::vector<Card> deck,
+                                                  std::vector<Player> &players)
+{
+ 
   /* shuffle the deck */
 
   /* pseudorandom number generator named rng, init with a seed from random_device */
   std::mt19937 rng(std::random_device{}());
   std::shuffle(deck.begin(), deck.end(), rng);
   
-
-  std::vector<Player> players(player_count);
+  /* players and hands */
   std::vector<std::vector<Card>> hands(player_count);
   
   /* give two cards to each player, just choose from the back of the deck */
@@ -58,27 +62,42 @@ void play_game(player_count) {
         players[player].hand.push_back(deck.back());
         deck.pop_back(); 
     }
-  }    
+  }  
+  return hands;
+ 
+}
 
+void play_game(int player_count) {
+  /* init player vector */
+  std::vector<Player> players(player_count);
+
+  std::vector<Card> deck = init_deck();
+  std::vector<std::vector<Card>> hands = shuffle_and_assign(player_count, deck,
+                                                            players);
+  int small_blind_i = 0;
+  int big_blind_i = 1;
   
-  int small_blind = 0;
-  int big_blind = 1;
+  /* enter the game */
 
   while (true) {
+    int pot = 0;
+    int min_bet = 0;
+    players[small_blind_i].chips -= small_b_val; 
+    pot += small_b_val;
     
-    players[small_blind].chips -= 1;
-    players[small_blind].currentBet = 1;
+    std::cout << "player " << small_blind_i << " paying " << small_b_val
+              << " small blind\n";
+    players[big_blind_i].chips -= big_b_val;
+    std::cout << "player " << big_blind_i << " paying " << big_b_val
+              << " big blind\n";
+    pot += big_b_val;
+    
+    min_bet = big_b_val;
 
-    players[big_blind].chips -= 2;
-    players[big_blind].currentBet = 2;
+    /* now cycle throught the rest of them */
+    
+  }
 
-    int pot = 3;
-
-    for (int i
-
-    small_blind = (small_blind + 1) % player_count;
-    big_blind = (big_blind + 1) % player_count;
-  } 
 }
 
 int main() {
